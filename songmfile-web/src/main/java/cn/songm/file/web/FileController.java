@@ -76,7 +76,7 @@ public class FileController extends BaseController {
         }
 
         ModelAndView mv = new ModelAndView("/data");
-        return mv.addObject("json", JsonUtils.toJson(result));
+        return mv.addObject("json", JsonUtils.getInstance().toJson(result));
     }
     
     @RequestMapping(value = "/uploads", method = RequestMethod.POST)
@@ -96,7 +96,7 @@ public class FileController extends BaseController {
         }
 
         ModelAndView mv = new ModelAndView("/data");
-        return mv.addObject("json", JsonUtils.toJson(result));
+        return mv.addObject("json", JsonUtils.getInstance().toJson(result));
     }
     
     public FileUrl saveFile(MultipartFile file)
