@@ -9,5 +9,5 @@ Result<Object> result = new Result<Object>();
 result.setSucceed(false);
 result.setErrorCode(FileError.FIL_OUTSIZE.getErrCode());
 result.setErrorDesc("上传的文件不能超过5M");
-out.print(JsonUtils.toJson(result));
+out.print(JsonUtils.getInstance().toJson(result));
 %>

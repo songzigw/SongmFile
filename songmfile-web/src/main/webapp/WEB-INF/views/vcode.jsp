@@ -1,5 +1,5 @@
 <%@page import="cn.songm.common.utils.RandomCode"%>
-<%@page import="cn.songm.acc.webapi.Browser"%>
+<%@page import="cn.songm.file.web.Browser"%>
 <%@page import="cn.songm.sso.service.SongmSSOService"%>
 <%@page import="java.io.ByteArrayOutputStream"%>
 <%@page import="cn.songm.common.utils.CodeUtils"%>

@@ -53,12 +53,6 @@
     </filter-mapping>
 
     <servlet>
-        <servlet-name>initServlet</servlet-name>
-        <servlet-class>cn.songm.file.web.InitServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet>
         <servlet-name>springMVC</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <init-param>
@@ -70,25 +64,6 @@
     <servlet-mapping>
         <servlet-name>springMVC</servlet-name>
         <url-pattern>/</url-pattern>
-    </servlet-mapping>
-
-    <!-- 异常码地址 -->
-    <error-page>
-        <error-code>400</error-code>
-        <location>/common/error.jsp</location>
-    </error-page>
-    <error-page>
-        <error-code>404</error-code>
-        <location>/common/error.jsp</location>
-    </error-page>
-    <error-page>
-        <error-code>500</error-code>
-        <location>/common/error.jsp</location>
-    </error-page>
-
-    <servlet-mapping>
-        <servlet-name>default</servlet-name>
-        <url-pattern>/assets/*</url-pattern>
     </servlet-mapping>
 
     <welcome-file-list>

@@ -14,15 +14,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
 import cn.songm.common.beans.Result;
 import cn.songm.common.service.GeneralErr;
-import cn.songm.common.utils.JsonUtils;
 import cn.songm.common.utils.StringUtils;
 import cn.songm.common.web.BaseController;
 import cn.songm.file.entity.FileUrl;
@@ -37,8 +34,14 @@ public class FileController extends BaseController {
             .append("img")
             .append(File.separator).toString();
 
+    /**
+     * 文件访问
+     * @param filename
+     * @param format
+     * @throws IOException
+     */
     @ResponseBody
-    @RequestMapping(value = "/{filename}.{format}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{filename}.{format}")
     public void download(@PathVariable("filename") String filename,
                          @PathVariable("format") String format)
             throws IOException {
@@ -63,9 +66,14 @@ public class FileController extends BaseController {
         client.close();
     }
 
-    @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public ModelAndView upload(
-            @RequestParam(value = "file", required = false)
+    /**
+     * 图片上传
+     * @param file
+     * @return
+     */
+    @RequestMapping(value = "image/upload.json")
+    public Result<FileUrl> upload(
+            @RequestParam(value = "file")
             MultipartFile file) {
         Result<FileUrl> result = new Result<FileUrl>();
         try {
@@ -74,14 +82,17 @@ public class FileController extends BaseController {
             result.setErrorCode(GeneralErr.UNKNOW.getErrCode());
             result.setErrorDesc("文件上传失败");
         }
-
-        ModelAndView mv = new ModelAndView("/data");
-        return mv.addObject("json", JsonUtils.getInstance().toJson(result));
+        return result;
     }
     
-    @RequestMapping(value = "/uploads", method = RequestMethod.POST)
-    public ModelAndView uploads(
-            @RequestParam(value = "files", required = false)
+    /**
+     * 图片批量上传
+     * @param files
+     * @return
+     */
+    @RequestMapping(value = "images/upload.json")
+    public Result<List<FileUrl>> uploads(
+            @RequestParam(value = "files")
             MultipartFile[] files) {
         List<FileUrl> fileUrlList = new ArrayList<FileUrl>();
         Result<List<FileUrl>> result = new Result<List<FileUrl>>();
@@ -95,8 +106,7 @@ public class FileController extends BaseController {
             result.setErrorDesc("文件上传失败");
         }
 
-        ModelAndView mv = new ModelAndView("/data");
-        return mv.addObject("json", JsonUtils.getInstance().toJson(result));
+        return result;
     }
     
     public FileUrl saveFile(MultipartFile file)
