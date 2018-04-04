@@ -72,6 +72,7 @@ public class FileController extends BaseController {
      * @return
      */
     @RequestMapping(value = "image/upload.json")
+    @ResponseBody
     public Result<FileUrl> upload(
             @RequestParam(value = "file")
             MultipartFile file) {
@@ -91,6 +92,7 @@ public class FileController extends BaseController {
      * @return
      */
     @RequestMapping(value = "images/upload.json")
+    @ResponseBody
     public Result<List<FileUrl>> uploads(
             @RequestParam(value = "files")
             MultipartFile[] files) {
@@ -128,10 +130,13 @@ public class FileController extends BaseController {
         
         // 计算文件访问的URL
         FileUrl fileUrl = new FileUrl();
+        fileUrl.init();
         fileUrl.setServer(request.getScheme() + "://"
                            + request.getServerName() + ":"
                            + request.getServerPort() 
-                           + request.getContextPath());
+                           + (request.getContextPath().endsWith("/")
+                        	? request.getContextPath()
+                        	: request.getContextPath() + "/"));
         fileUrl.setPath(filePath.replace(File.separatorChar, '_'));
         
         file.transferTo(tgtFile);
