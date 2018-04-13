@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cn.songm.file</groupId>
 	<artifactId>SongmFile</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<packaging>pom</packaging>
 	
 	<distributionManagement>
@@ -45,17 +45,29 @@
         <zookeeper_version>3.3.3</zookeeper_version>
         <dubbo_version>2.5.3</dubbo_version>
         <fastjson.version>1.2.11</fastjson.version>
-        <songm.common.utils.version>0.0.1-SNAPSHOT</songm.common.utils.version>
-        <songm.common.dao.version>0.0.1-SNAPSHOT</songm.common.dao.version>
-        <songm.common.beans.version>0.0.1-SNAPSHOT</songm.common.beans.version>
-        <songm.common.web.version>0.0.1-SNAPSHOT</songm.common.web.version>
-        <songm.common.service.version>0.0.1-SNAPSHOT</songm.common.service.version>
-        <songm.common.redis.version>0.0.1-SNAPSHOT</songm.common.redis.version>
-        <songmacc.service.version>0.0.1-SNAPSHOT</songmacc.service.version>
+        <songm.common.utils.version>0.1</songm.common.utils.version>
+        <songm.common.dao.version>0.1</songm.common.dao.version>
+        <songm.common.beans.version>0.1</songm.common.beans.version>
+        <songm.common.web.version>0.1</songm.common.web.version>
+        <songm.common.service.version>0.1</songm.common.service.version>
+        <songm.common.redis.version>0.1</songm.common.redis.version>
+        <songmacc.service.version>0.0.1</songmacc.service.version>
+        <songmsso.service.version>0.0.1</songmsso.service.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+        	<dependency>
+	            <groupId>cn.songm.sso</groupId>
+	            <artifactId>songmsso-service</artifactId>
+	            <version>${songmsso.service.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>cn.songm.acc</groupId>
+	            <artifactId>songmacc-service</artifactId>
+	            <version>${songmacc.service.version}</version>
+	        </dependency>
+        	
             <dependency>
                 <groupId>cn.songm.common</groupId>
                 <artifactId>songm-common-utils</artifactId>

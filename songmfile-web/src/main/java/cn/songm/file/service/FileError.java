@@ -20,7 +20,9 @@ import cn.songm.common.service.ErrorInfo;
 
 public enum FileError implements ErrorInfo {
     /** 文件超过大小 */
-    FIL_OUTSIZE("FIL_101");
+    FIL_OUTSIZE("FIL_101"),
+    /** 文件不存在 */
+    FIL_NOEXIST("FIL_102");
 
     private final String errCode;
     

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.GsonBuilder;
 
-import cn.songm.common.utils.DateTypeAdapter;
+import cn.songm.common.utils.GsonDateTypeAdapter;
 import cn.songm.common.utils.JsonUtils;
 
 @Service
@@ -25,7 +25,7 @@ public class FileApplication implements ApplicationListener<ApplicationEvent>, I
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof ContextRefreshedEvent) {
 			GsonBuilder builder = new GsonBuilder();
-			builder.registerTypeAdapter(Date.class, new DateTypeAdapter());
+			builder.registerTypeAdapter(Date.class, new GsonDateTypeAdapter());
 			JsonUtils.init(builder);
 		}
 	}
