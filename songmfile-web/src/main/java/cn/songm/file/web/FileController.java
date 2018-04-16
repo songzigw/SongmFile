@@ -36,8 +36,7 @@ public class FileController extends FileBaseController {
     private final String PATH = new StringBuilder(File.separator)
             .append("WEB-INF")
             .append(File.separator)
-            .append("img")
-            .append(File.separator).toString();
+            .append("img").toString();
 
     @Autowired
     private UserService userService;
@@ -49,14 +48,17 @@ public class FileController extends FileBaseController {
      * @throws IOException
      */
     @ResponseBody
-    @RequestMapping(value = "/{filename}.{format}")
-    public void download(@PathVariable("filename") String filename,
-                         @PathVariable("format") String format)
-            throws IOException {
-        String filePath = filename + "." + format;
+    @RequestMapping(value = "/**")
+    public void download(HttpServletRequest request) throws IOException {
+        String filePath = request.getServletPath();
+        String pathInfo = request.getPathInfo();
+        if (pathInfo != null && pathInfo.length() > 0) {
+            filePath = filePath + pathInfo;
+        }
+        
         File f = new File(getServletContext().getRealPath(PATH + filePath));
         if (!f.exists()) {
-            f = new File(getServletContext().getRealPath(PATH + "default.png"));
+            f = new File(getServletContext().getRealPath(PATH + File.separator + "default.png"));
         }
         
         // 读取文件
@@ -93,7 +95,7 @@ public class FileController extends FileBaseController {
         return result;
     }
     
-    @RequestMapping(value = "image/cut")
+    @RequestMapping(value = "image/cut.json")
     @ResponseBody
     public Result<FileUrl> cutImage(
     		@RequestParam(name = "avatarServer")
@@ -187,9 +189,9 @@ public class FileController extends FileBaseController {
         if (path != null) {
         	path = path.startsWith(File.separator) ? path : File.separator + path;
         	path = path.endsWith(File.separator) ? path : path + File.separator;
-        	filePath = user.getUserId() + path + newName;
+        	filePath = File.separator + user.getUserId() + path + newName;
         } else {
-        	filePath = user.getUserId() + File.separator + newName;
+        	filePath = File.separator + user.getUserId() + File.separator + newName;
         }
         
         // 保存文件

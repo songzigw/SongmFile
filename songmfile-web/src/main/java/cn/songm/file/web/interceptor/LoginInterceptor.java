@@ -20,6 +20,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Resource(name = "songmSsoService")
     private SongmSSOService songmSsoService;
+    private String[] suffixs = {".jpg", ".gif", "png"};
 
     public User getUser(HttpServletRequest request) {
         String sessionId = Browser.getSessionId(request);
@@ -31,6 +32,13 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request,
             HttpServletResponse response, Object handler) throws Exception {
+    	String uri = request.getRequestURI();
+    	for (String suf : suffixs) {
+    		if (uri.endsWith(suf)) {
+    			return true;
+    		}
+    	}
+    	
         User user = this.getUser(request);
         if (user != null) return true;
         
