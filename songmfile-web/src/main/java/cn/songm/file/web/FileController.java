@@ -6,25 +6,19 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import cn.songm.acc.entity.User;
-import cn.songm.acc.service.UserService;
 import cn.songm.common.beans.Result;
 import cn.songm.common.service.GeneralErr;
-import cn.songm.common.utils.JsonUtils;
 import cn.songm.common.utils.StringUtils;
 import cn.songm.file.entity.FileUrl;
 import cn.songm.file.service.FileError;
@@ -37,9 +31,6 @@ public class FileController extends FileBaseController {
             .append("WEB-INF")
             .append(File.separator)
             .append("img").toString();
-
-    @Autowired
-    private UserService userService;
 
     /**
      * 文件访问
@@ -75,19 +66,34 @@ public class FileController extends FileBaseController {
         client.close();
     }
 
+    private String[] suffixs = {".jpg", ".gif", ".png"};
+    
     /**
-     * 图片上传
+     * 头像上传
      * @param file
      * @return
      */
-    @RequestMapping(value = "image/upload.json")
+    @RequestMapping(value = "member/avatar/upload.json")
     @ResponseBody
-    public Result<FileUrl> uploadImage(
+    public Result<FileUrl> uploadAvatar(
             @RequestParam(value = "file")
             MultipartFile file) {
-        Result<FileUrl> result = new Result<FileUrl>();
+    	Result<FileUrl> result = new Result<FileUrl>();
+    	
+    	boolean flag = false;
+    	for (String suf : suffixs) {
+    		if (getSuffix(file.getOriginalFilename()).endsWith(suf)) {
+    			flag = true;
+    		}
+    	}
+    	if (!flag) {
+    		result.setErrorCode(FileError.FIL_FORMAT.getErrCode());
+            result.setErrorDesc("文件格式错误");
+    		return result;
+    	}
+    	
         try {
-            result.setData(this.saveFile(file, null));
+            result.setData(saveFile(file, null));
         } catch (Exception e) {
             result.setErrorCode(GeneralErr.UNKNOW.getErrCode());
             result.setErrorDesc("文件上传失败");
@@ -95,12 +101,22 @@ public class FileController extends FileBaseController {
         return result;
     }
     
-    @RequestMapping(value = "image/cut.json")
+    /**
+     * 头像截图
+     * @param avatarServer
+     * @param avatarOldPath
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     * @return
+     */
+    @RequestMapping(value = "member/avatar/crop.json")
     @ResponseBody
-    public Result<FileUrl> cutImage(
-    		@RequestParam(name = "avatarServer")
-    		String avatarServer,
-    		@RequestParam(name = "avatarOldPath")
+    public Result<FileUrl> cropAvatar(
+    		@RequestParam(name = "avatar_old_server")
+    		String avatarOldServer,
+    		@RequestParam(name = "avatar_old_path")
     		String avatarOldPath,
     		@RequestParam(name = "x") int x,
     		@RequestParam(name = "y") int y,
@@ -108,9 +124,10 @@ public class FileController extends FileBaseController {
     		@RequestParam(name = "height") int height) {
     	Result<FileUrl> result = new Result<FileUrl>();
     	
-    	// 计算截图后的照片 原始图片不存在
+    	// 计算截图后的照片
     	File oldFile = new File(
                 getServletContext().getRealPath(PATH + avatarOldPath));
+    	// 原始图片不存在
         if (!oldFile.exists()) {
         	result.setErrorCode(FileError.FIL_NOEXIST.getErrCode());
         	result.setErrorDesc("原始文件不存在");
@@ -121,7 +138,8 @@ public class FileController extends FileBaseController {
 		String avatarPath = avatarOldPath.substring(0, point)
 				+ "_" + x + "_" + y + "_" + width + "_" + height
 				+ suffix;
-		File newFile = new File(avatarPath);
+		File newFile = new File(
+				getServletContext().getRealPath(PATH + avatarPath));
 		if (!newFile.exists()) {
 			newFile.mkdirs();
 			try {
@@ -137,17 +155,10 @@ public class FileController extends FileBaseController {
 		}
 
 		FileUrl fUrl = new FileUrl();
-    	fUrl.setServer(avatarServer);
-    	fUrl.setPath(avatarServer + avatarPath);
+    	fUrl.setServer(getFileServer());
+    	fUrl.setPath(avatarPath);
     	result.setData(fUrl);
     	
-    	User user = this.getSessionUser();
-    	user.setAvatarServer(avatarServer);
-    	user.setAvatarOldPath(avatarOldPath);
-    	user.setAvatarPath(avatarPath);
-    	user.setAvatar(fUrl.getPath());
-		userService.editUserPhoto(user.getUserId(), avatarServer, avatarOldPath, avatarPath, user.getAvatar());
-		songmSsoService.editUserInfo(this.getSessionId(), JsonUtils.getInstance().toJson(user));
     	return result;
     }
     
@@ -156,35 +167,45 @@ public class FileController extends FileBaseController {
      * @param files
      * @return
      */
-    @RequestMapping(value = "images/upload.json")
-    @ResponseBody
-    public Result<List<FileUrl>> uploadImages(
-            @RequestParam(value = "files")
-            MultipartFile[] files) {
-        List<FileUrl> fileUrlList = new ArrayList<FileUrl>();
-        Result<List<FileUrl>> result = new Result<List<FileUrl>>();
-        try {
-            for (MultipartFile file : files) {
-                fileUrlList.add(saveFile(file, null));
-            }
-            result.setData(fileUrlList);
-        } catch (Exception e) {
-            result.setErrorCode(GeneralErr.UNKNOW.getErrCode());
-            result.setErrorDesc("文件上传失败");
-        }
-
-        return result;
+//    @RequestMapping(value = "member/images/upload.json")
+//    @ResponseBody
+//    public Result<List<FileUrl>> uploadBatchImages(
+//            @RequestParam(value = "files")
+//            MultipartFile[] files) {
+//        List<FileUrl> fileUrlList = new ArrayList<FileUrl>();
+//        Result<List<FileUrl>> result = new Result<List<FileUrl>>();
+//        try {
+//            for (MultipartFile file : files) {
+//                fileUrlList.add(saveFile(file, null));
+//            }
+//            result.setData(fileUrlList);
+//        } catch (Exception e) {
+//            result.setErrorCode(GeneralErr.UNKNOW.getErrCode());
+//            result.setErrorDesc("文件上传失败");
+//        }
+//
+//        return result;
+//    }
+    
+    private String getSuffix(String fileName) {
+    	return fileName.substring(fileName.lastIndexOf("."));
     }
     
-    public FileUrl saveFile(MultipartFile file, String path)
+    /**
+     * 文件保存
+     * @param file
+     * @param path
+     * @return
+     * @throws IllegalStateException
+     * @throws IOException
+     */
+    private FileUrl saveFile(MultipartFile file, String path)
             throws IllegalStateException, IOException {
-        HttpServletRequest request = this.getRequest();
         User user = this.getSessionUser();
         
         // 计算文件的保存路径
         String fileName = file.getOriginalFilename();
-        String suffix = fileName.substring(fileName.lastIndexOf("."));
-        String newName = StringUtils.get32UUID() + suffix;
+        String newName = StringUtils.get32UUID() + getSuffix(fileName);
         String filePath = null;
         if (path != null) {
         	path = path.startsWith(File.separator) ? path : File.separator + path;
@@ -204,16 +225,21 @@ public class FileController extends FileBaseController {
         // 计算文件访问的URL
         FileUrl fileUrl = new FileUrl();
         fileUrl.init();
-        fileUrl.setServer(request.getScheme() + "://"
-                           + request.getServerName() + ":"
-                           + request.getServerPort() 
-                           + (request.getContextPath().endsWith("/")
-                        	? request.getContextPath()
-                        	: request.getContextPath() + "/"));
+        fileUrl.setServer(getFileServer());
         fileUrl.setPath(filePath);
         
         file.transferTo(tgtFile);
         
         return fileUrl;
+    }
+    
+    private String getFileServer() {
+    	HttpServletRequest request = this.getRequest();
+    	return request.getScheme() + "://"
+                + request.getServerName() + ":"
+                + request.getServerPort() 
+                + (request.getContextPath().endsWith("/")
+             	? request.getContextPath()
+             	: request.getContextPath() + "/");
     }
 }

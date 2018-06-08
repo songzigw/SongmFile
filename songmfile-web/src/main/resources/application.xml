@@ -9,6 +9,6 @@
 	<context:component-scan base-package="cn.songm.file" />
 
 	<import resource="app-mvc.xml" />
-	<import resource="app-consumer.xml" />
+	<import resource="app-dubbo.xml" />
 
 </beans>

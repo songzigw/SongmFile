@@ -22,7 +22,9 @@ public enum FileError implements ErrorInfo {
     /** 文件超过大小 */
     FIL_OUTSIZE("FIL_101"),
     /** 文件不存在 */
-    FIL_NOEXIST("FIL_102");
+    FIL_NOEXIST("FIL_102"),
+	/** 文件格式错误 */
+    FIL_FORMAT("FIL_103");
 
     private final String errCode;
     

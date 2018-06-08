@@ -63,7 +63,7 @@
     <mvc:interceptors>
     	<bean class="cn.songm.file.web.interceptor.MustInterceptor"/>
     	<mvc:interceptor>
-            <mvc:mapping path="/**" />
+            <mvc:mapping path="/member/**" />
             <bean class="cn.songm.file.web.interceptor.LoginInterceptor" />
         </mvc:interceptor>
     </mvc:interceptors>
