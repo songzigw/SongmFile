@@ -37,15 +37,6 @@
             <artifactId>songm-common-web</artifactId>
         </dependency>
         
-        <dependency>
-            <groupId>com.thetransactioncompany</groupId>
-            <artifactId>cors-filter</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.thetransactioncompany</groupId>
-            <artifactId>java-property-utils</artifactId>
-        </dependency>
     </dependencies>
 
 	<build>
