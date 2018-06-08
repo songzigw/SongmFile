@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import cn.songm.acc.entity.User;
 import cn.songm.common.beans.Result;
 import cn.songm.common.service.GeneralErr;
+import cn.songm.common.utils.PictureTool;
 import cn.songm.common.utils.StringUtils;
 import cn.songm.file.entity.FileUrl;
 import cn.songm.file.service.FileError;

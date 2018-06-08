@@ -13,7 +13,7 @@ import cn.songm.acc.entity.User;
 import cn.songm.acc.service.UserError;
 import cn.songm.common.beans.Result;
 import cn.songm.common.utils.JsonUtils;
-import cn.songm.file.web.Browser;
+import cn.songm.common.web.Browser;
 import cn.songm.sso.service.SongmSSOService;
 
 public class LoginInterceptor implements HandlerInterceptor {
